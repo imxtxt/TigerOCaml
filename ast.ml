@@ -1,8 +1,8 @@
 type bop =
-  | Add
-  | Sub
-  | Mul
-  | Div
+  | Plus
+  | Minus
+  | Times
+  | Divide
   | Eq
   | Neq
   | Lt
@@ -11,9 +11,9 @@ type bop =
   | Ge
 
 type var = 
-  | Simp of string
+  | Simple of string
   | Field of var * string
-  | ArrSelt of var * exp
+  | ArrSelect of var * exp
 
 and exp = 
   | Var of var
@@ -27,14 +27,14 @@ and exp =
   | Assign of var * exp
   | If of exp * exp * exp option
   | While of exp * exp
-  | ForExp of string * exp * exp * exp
-  | BreakExp
-  | LetExp of dec list * exp
-  | ArrayExp of string * exp * exp
+  | For of string * exp * exp * exp
+  | Break
+  | Let of dec list * exp
+  | Array of string * exp * exp
 
 and dec = 
   | FunDecl of func list
-  | VarDecl of string * string * exp
+  | VarDecl of string * string option * exp
   | TypeDecl of string * ty
 
 and ty =
@@ -45,6 +45,6 @@ and ty =
 and func = {
   name: string; 
   param: (string * string) list;
-  result: string;
+  result: string option;
   body: exp
 }
