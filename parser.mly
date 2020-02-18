@@ -67,19 +67,19 @@ prog:
 
 exp:
   | v=var                                                    { Var v }
-  | NIL                                                      { NIL }
+  | NIL                                                      { Nil }
   | i=INT                                                    { Int i }
   | s=STRING                                                 { Str s }
   | id=ID LPAREN l=separated_list(COMMA ,exp) RPAREN         { Call (id, l) }
   | l=exp b=bop r=exp                                        { 
                                                                match b with
-                                                               | And -> If (l, r, Int 0)
-                                                               | Or  -> If (l, Int 1, r)
+                                                               | And -> If (l, r, Some (Int 0))
+                                                               | Or  -> If (l, Int 1, Some r)
                                                                | _   -> Bop (b, l, r) 
                                                              }
 
   | i=ID LBRACE l=separated_list(SEMICOLON, refield) RBRACE  { Record (i, l) }
-  | LPAREN l=separated_list(SEMICOLON, exp) RPAREN           { l }
+  | LPAREN l=separated_list(SEMICOLON, exp) RPAREN           { Seq l }
   | v=var ASSIGN e=exp                                       { Assign (v, e) }
   | IF c=exp THEN t=exp                                      { If (c, t, None) }
   | IF c=exp THEN t=exp ELSE e=exp                           { If (c, t, Some e)}
@@ -100,7 +100,7 @@ refield:
   | EQ     { Eq }
   | NEQ    { Neq }
   | LT     { Lt }
-  | LE     { LE }
+  | LE     { Le }
   | GT     { Gt }
   | GE     { Ge }
   | AND    { And }
@@ -108,7 +108,7 @@ refield:
 
 ty:
   | i=ID                                          { NamedTy i }
-  | LBRACE l=separated_list(COMMA, rfield) RBRACE { l }
+  | LBRACE l=separated_list(COMMA, rfield) RBRACE { RecordTy l }
   | ARRAY OF i=ID                                 { ArrayTy i}
 
 rfield:
@@ -119,9 +119,9 @@ dec:
   | VAR i=ID ASSIGN e=exp                 { VarDecl (i, None, e) }
   | VAR i=ID COLON t=ID ASSIGN e=exp      { VarDecl (i, Some t, e) }
   | FUNCTION i=ID LPAREN l=separated_list(COMMA, rfield) RPAREN EQ e=exp 
-                                          { { name = i; param = l; result = None; body = e} }
+                                          { FunDecl [{ name = i; param = l; result = None; body = e}] }
   | FUNCTION i=ID LPAREN l=separated_list(COMMA, rfield) RPAREN COLON r=ID EQ e=exp 
-                                          { { name = i; param = l; result = Some r; body = e} }
+                                          { FunDecl [{ name = i; param = l; result = Some r; body = e}] }
 
 var:
   | i=ID                      { Simple i }

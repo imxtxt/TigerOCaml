@@ -60,7 +60,7 @@ and string = parse
   | '"'  { 
             let t = !strBuf in 
             strBuf := "";
-            STRING (t 
+            STRING (t)
          }  
   | eof  { raise (Lexer_error (Printf.sprintf "String is not terminated")) }
-  | _    { strBuf := !strBuf ^ (Lexing.lexeme_char lexbuf 0); string lexbuf }
+  | _    { strBuf := !strBuf ^ (Lexing.lexeme lexbuf); string lexbuf }
