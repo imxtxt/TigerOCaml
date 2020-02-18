@@ -10,10 +10,9 @@ type bop =
   | Gt
   | Ge
 
+  (* Not used *)
   | And
   | Or
-
-
 
 type var = 
   | Simple of string
