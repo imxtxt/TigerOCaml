@@ -49,7 +49,7 @@
 %token VAR
 %token TYPE
 
-
+%nonassoc ASSIGN
 %left OR
 %left AND
 %nonassoc EQ NEQ LT LE GE GT 
