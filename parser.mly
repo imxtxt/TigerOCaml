@@ -49,6 +49,7 @@
 %token VAR
 %token TYPE
 
+%nonassoc DO
 %nonassoc ASSIGN
 %left OR
 %left AND
