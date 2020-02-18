@@ -50,6 +50,7 @@
 %token TYPE
 
 %nonassoc DO
+%right THEN ELSE
 %nonassoc ASSIGN
 %left OR
 %left AND
