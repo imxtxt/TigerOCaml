@@ -46,8 +46,8 @@
 %token VAR
 %token TYPE
 
-%start prog
-%type <Ast.exp> prog
+%start exp
+%type <Ast.exp> exp
 %%
 
 exp:
@@ -56,7 +56,13 @@ exp:
   | i=INT                                                    { Int i }
   | s=STRING                                                 { Str s }
   | id=ID LPAREN l=separated_list(COMMA ,exp) RPAREN         { Call (id, l) }
-  | l=exp b=bop r=exp                                        { Bop (b, l, r) }
+  | l=exp b=bop r=exp                                        { 
+                                                               match b with
+                                                               | And -> If (l, r, Int 0)
+                                                               | Or  -> If (l, Int 1, r)
+                                                               | _   -> Bop (b, l, r) 
+                                                             }
+
   | i=ID LBRACE l=separated_list(SEMICOLON, refield) RBRACE  { Record (i, l) }
   | LPAREN l=separated_list(SEMICOLON, exp) RPAREN           { l }
   | v=var ASSIGN e=exp                                       { Assign (v, e) }
@@ -82,6 +88,8 @@ refield:
   | LE     { LE }
   | GT     { Gt }
   | GE     { Ge }
+  | AND    { And }
+  | OR     { Or }
 
 ty:
   | i=ID                                          { NamedTy i }
@@ -94,7 +102,7 @@ rfield:
 dec:
   | TYPE i=ID EQ t=ty                     { TypeDecl (i, t) }
   | VAR i=ID ASSIGN e=exp                 { VarDecl (i, None, e) }
-  | VAR i=ID COLONE t=ID ASSIGN e=exp     { VarDecl (i, Some t, e) }
+  | VAR i=ID COLON t=ID ASSIGN e=exp     { VarDecl (i, Some t, e) }
   | FUNCTION i=ID LPAREN l=separated_list(COMMA, rfield) RPAREN EQ e=exp 
                                           { { name = i; param = l; result = None; body = e} }
   | FUNCTION i=ID LPAREN l=separated_list(COMMA, rfield) RPAREN COLON r=ID EQ e=exp 
