@@ -10,6 +10,11 @@ type bop =
   | Gt
   | Ge
 
+  | And
+  | Or
+
+
+
 type var = 
   | Simple of string
   | Field of var * string
