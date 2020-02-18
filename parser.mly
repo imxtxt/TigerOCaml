@@ -52,6 +52,7 @@
 %nonassoc DO
 %right THEN ELSE
 %nonassoc ASSIGN
+%nonassoc OF
 %left OR
 %left AND
 %nonassoc EQ NEQ LT LE GE GT 
