@@ -2,9 +2,12 @@
   open Ast
 %}
 
+%token EOF
+
 %token <string> ID
 %token <string> STRING
 %token <int>    INT
+
 %token COMMA 
 %token COLON 
 %token SEMICOLON 
@@ -46,9 +49,20 @@
 %token VAR
 %token TYPE
 
-%start exp
-%type <Ast.exp> exp
+
+%left OR
+%left AND
+%nonassoc EQ NEQ LT LE GE GT 
+%left PLUS MINUS
+%left TIMES DIVIDE
+
+
+%start prog
+%type <Ast.exp> prog
 %%
+
+prog: 
+  | e=exp EOF { e }
 
 exp:
   | v=var                                                    { Var v }
@@ -102,7 +116,7 @@ rfield:
 dec:
   | TYPE i=ID EQ t=ty                     { TypeDecl (i, t) }
   | VAR i=ID ASSIGN e=exp                 { VarDecl (i, None, e) }
-  | VAR i=ID COLON t=ID ASSIGN e=exp     { VarDecl (i, Some t, e) }
+  | VAR i=ID COLON t=ID ASSIGN e=exp      { VarDecl (i, Some t, e) }
   | FUNCTION i=ID LPAREN l=separated_list(COMMA, rfield) RPAREN EQ e=exp 
                                           { { name = i; param = l; result = None; body = e} }
   | FUNCTION i=ID LPAREN l=separated_list(COMMA, rfield) RPAREN COLON r=ID EQ e=exp 
